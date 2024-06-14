@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       },
       {
         role: "user",
-        content: `我要在${body.dateRange[0]}到${body.dateRange[1]}去${body.destination}旅行。请为我做一个中文的旅行规划。`,
+        content: `我要在${body.dateRange[0]}到${body.dateRange[1]}去${body.destination}旅行。请为我做一个中文的旅行规划。字段内容都使用中文。字段内容都使用中文。字段内容都使用中文。`,
       },
       //@ts-ignore
       { role: "assistant", content: "{", partial: true },
