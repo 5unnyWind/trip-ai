@@ -34,33 +34,35 @@ export default function Home() {
   }, []);
   return (
     <main className="w-full overflow-x-hidden overflow-y-auto min-h-screen relative">
-      <form action="">
-        <CarouselItem curStep={step} index={0}>
-          <>
-            <div className="font-semibold text-2xl">想去哪儿？</div>
-            <Input
-              name="destination"
-              className="mt-10"
-              label="目的地"
-              value={destination}
-              onChange={(e) => {
-                setDestination(e.target.value);
-              }}
-            />
-            <Button
-              radius="full"
-              className="w-full mx-auto mt-4"
-              onClick={() => {
-                setStep(1);
-              }}
-            >
-              开始
-            </Button>
-          </>
-        </CarouselItem>
-        <CarouselItem curStep={step} index={1}>
-          <>
-            {/* <Button
+      <CarouselItem curStep={step} index={0}>
+        <>
+          <div className="font-semibold text-2xl">想去哪儿？</div>
+          <Input
+            name="destination"
+            className="mt-10"
+            label="目的地"
+            value={destination}
+            onChange={(e) => {
+              setDestination(e.target.value);
+            }}
+          />
+          <Button
+            radius="full"
+            className="w-full mx-auto mt-4"
+            onClick={() => {
+              if (!destination) {
+                return;
+              }
+              setStep(1);
+            }}
+          >
+            开始
+          </Button>
+        </>
+      </CarouselItem>
+      <CarouselItem curStep={step} index={1}>
+        <>
+          {/* <Button
               className=""
               radius="full"
               size="sm"
@@ -70,57 +72,58 @@ export default function Home() {
             >
               {"<"}
             </Button> */}
-            <div className="font-semibold text-2xl">什么时候？</div>
-            <DateRangePicker
-              onChange={(value) => {
-                setDateRange([
-                  `${value.start.month}月${value.start.day}日`,
-                  `${value.end.month}月${value.end.day}日`,
-                ]);
-              }}
-              label="旅行时间"
-              className="mt-10"
-            />
-            <Button
-              radius="full"
-              className="w-full mx-auto mt-4"
-              isLoading={isLoading}
-              onClick={() => {
-                // setStep(2);
-                setLoading(true);
-                fetch(`${HOST}/api/generate`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    destination,
-                    dateRange,
-                  }),
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    try {
-                      const completeMessage = JSON.parse(data.completeMessage);
-                      console.log("completeMessage", completeMessage);
-                      setTripData([completeMessage, ...tripData]);
-                      localStorage.setItem(
-                        "tripData",
-                        JSON.stringify([completeMessage, ...tripData])
-                      );
-                    } catch (e) {
-                      console.log(e);
-                    }
-                    setStep(100);
-                    setLoading(false);
-                  });
-              }}
-            >
-              生成
-            </Button>
-          </>
-        </CarouselItem>
-      </form>
+          <div className="font-semibold text-2xl">什么时候？</div>
+          <DateRangePicker
+            onChange={(value) => {
+              setDateRange([
+                `${value.start.month}月${value.start.day}日`,
+                `${value.end.month}月${value.end.day}日`,
+              ]);
+            }}
+            label="旅行时间"
+            className="mt-10"
+          />
+          <Button
+            radius="full"
+            className="w-full mx-auto mt-4"
+            isLoading={isLoading}
+            onClick={() => {
+              if (!dateRange[0] || !dateRange[1]) {
+                return;
+              }
+              setLoading(true);
+              fetch(`${HOST}/api/generate`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  destination,
+                  dateRange,
+                }),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  try {
+                    const completeMessage = JSON.parse(data.completeMessage);
+                    console.log("completeMessage", completeMessage);
+                    setTripData([completeMessage, ...tripData]);
+                    localStorage.setItem(
+                      "tripData",
+                      JSON.stringify([completeMessage, ...tripData])
+                    );
+                  } catch (e) {
+                    console.log(e);
+                  }
+                  setStep(100);
+                  setLoading(false);
+                });
+            }}
+          >
+            生成
+          </Button>
+        </>
+      </CarouselItem>
       <CarouselItem curStep={step} index={100}>
         <>
           <div className="font-semibold text-2xl flex items-center">
