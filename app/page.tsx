@@ -32,6 +32,52 @@ export default function Home() {
       setStep(100);
     }
   }, []);
+
+  const handleGenerate = async () => {
+    if (!dateRange[0] || !dateRange[1]) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${HOST}/api/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          destination,
+          dateRange,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      let curAnswer = "{";
+      // read stream
+      const reader = res.body?.getReader();
+      if (!reader) {
+        return;
+      }
+      const decoder = new TextDecoder("utf-8");
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) {
+          const completeMessage = JSON.parse(curAnswer);
+          setTripData([completeMessage, ...tripData]);
+          localStorage.setItem(
+            "tripData",
+            JSON.stringify([completeMessage, ...tripData])
+          );
+          break;
+        }
+        curAnswer += decoder.decode(value);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setStep(100);
+    setLoading(false);
+  };
   return (
     <main className="w-full overflow-x-hidden overflow-y-auto min-h-screen relative">
       <CarouselItem curStep={step} index={0}>
@@ -87,38 +133,7 @@ export default function Home() {
             radius="full"
             className="w-full mx-auto mt-4"
             isLoading={isLoading}
-            onClick={() => {
-              if (!dateRange[0] || !dateRange[1]) {
-                return;
-              }
-              setLoading(true);
-              fetch(`${HOST}/api/generate`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  destination,
-                  dateRange,
-                }),
-              })
-                .then((res) => res.json())
-                .then((data) => {
-                  try {
-                    const completeMessage = JSON.parse(data.completeMessage);
-                    console.log("completeMessage", completeMessage);
-                    setTripData([completeMessage, ...tripData]);
-                    localStorage.setItem(
-                      "tripData",
-                      JSON.stringify([completeMessage, ...tripData])
-                    );
-                  } catch (e) {
-                    console.log(e);
-                  }
-                  setStep(100);
-                  setLoading(false);
-                });
-            }}
+            onClick={handleGenerate}
           >
             生成
           </Button>

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     await request.json();
   const stream = await client.chat.completions.create({
     model: "moonshot-v1-8k",
-    // stream: true,
+    stream: true,
     messages: [
       {
         role: "system",
@@ -27,22 +27,37 @@ export async function POST(request: NextRequest) {
     temperature: 0.3,
     max_tokens: 4096,
   });
-  const completeMessage = "{" + stream.choices[0].message.content;
-  return NextResponse.json({ completeMessage });
+  let completeMessage = "";
+  const encoder = new TextEncoder();
+  async function* makeIterator() {
+    // first send the OAI chunks
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0].delta.content as string;
+      completeMessage += delta || "";
+      if (chunk.choices[0].finish_reason) {
+        //@ts-ignore
+        const usage: CompletionUsage = chunk.choices[0].usage;
+      }
+      yield encoder.encode(delta);
+    }
+    // optionally, some additional info can be sent here, like
+    // yield encoder.encode(JSON.stringify({ thread_id: thread._id }));
+  }
+  return new Response(iteratorToStream(makeIterator()));
 }
 
-// function iteratorToStream(iterator: any) {
-//   return new ReadableStream({
-//     async pull(controller) {
-//       const { value, done } = await iterator.next();
-//       if (done) {
-//         controller.close();
-//       } else {
-//         controller.enqueue(value);
-//       }
-//     },
-//   });
-// }
+function iteratorToStream(iterator: any) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+  });
+}
 
 const typeDescription = `export type TimeOfDay = "morning" | "noon" | "afternoon" | "evening" | "night";
 export type Peers = "Solo" | "Couple" | "Family" | "Friends";
