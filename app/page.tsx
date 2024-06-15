@@ -45,6 +45,8 @@ const activityDic: Record<ActivityType, string> = {
   "Spa wellness": "水疗养生",
 };
 
+const colors = ["#AF47D2", "#26355D", "#FF8F00"];
+
 export default function Home() {
   const [isLoading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
@@ -252,7 +254,7 @@ export default function Home() {
           <div className="font-semibold text-2xl flex items-center">
             <div className="">旅行计划</div>
             <div
-              className="ml-4 text-3xl text-center w-8 h-8 leading-7 rounded-full bg-[#26355D]"
+              className="ml-4 text-3xl text-center w-8 h-8 leading-7 rounded-full text-white bg-[#26355D]"
               onClick={() => {
                 setStep(0);
                 setDateRange(undefined);
@@ -289,12 +291,23 @@ export default function Home() {
                               {" "}
                               {plan.activities}{" "}
                             </Balancer>
-                            <span>
-                              {plan.date.split("-")[1]}/
-                              {plan.date.split("-")[2]}
-                            </span>
-                            <Chip color="secondary" size="sm" className="h-5">
-                              {timeOfDayDic[plan.timeOfDay]}
+                            <Chip
+                              style={{
+                                backgroundColor:
+                                  colors[
+                                    (+plan.date.split("-")[2] + 1) %
+                                      colors.length
+                                  ],
+                              }}
+                              size="sm"
+                              className="h-5 text-white"
+                            >
+                              <span className="">
+                                {plan.date.split("-")[1]}/
+                                {plan.date.split("-")[2]}
+                              </span>
+                              <span className="border-r-1 mx-1 "></span>
+                              <span>{timeOfDayDic[plan.timeOfDay]}</span>
                             </Chip>
                           </div>
                           <div className="text-sm">{plan.description}</div>
