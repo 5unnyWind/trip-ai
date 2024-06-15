@@ -341,9 +341,9 @@ const CarouselItem = ({
   return (
     <div
       className={clsx(
-        "w-full mt-10 absolute transition-all duration-500",
+        "w-full mt-10 absolute top-0 transition-all duration-500",
         curStep < index && "opacity-0 translate-x-[100vw]",
-        curStep === index && "opacity-100 translate-x-0",
+        curStep === index && "opacity-100 translate-x-0 sticky",
         curStep > index && "opacity-0 -translate-x-[100vw]"
       )}
     >
