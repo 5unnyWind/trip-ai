@@ -254,7 +254,7 @@ export default function Home() {
           <div className="font-semibold text-2xl flex items-center">
             <div className="">旅行计划</div>
             <div
-              className="ml-4 text-3xl text-center w-8 h-8 leading-7 rounded-full text-white bg-[#26355D]"
+              className="ml-4 text-3xl text-center w-7 h-7 cursor-pointer leading-6 rounded-full text-white bg-[#26355D]"
               onClick={() => {
                 setStep(0);
                 setDateRange(undefined);
@@ -286,7 +286,8 @@ export default function Home() {
                           key={planIndex}
                           className={clsx(
                             "mt-2",
-                            plan.done && "line-through grayscale opacity-50 transition-all duration-500"
+                            plan.done &&
+                              "line-through grayscale opacity-50 transition-all duration-500"
                           )}
                         >
                           <div className="flex items-center space-x-1">
