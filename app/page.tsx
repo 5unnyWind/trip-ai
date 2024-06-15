@@ -250,7 +250,7 @@ export default function Home() {
         </>
       </CarouselItem>
       <CarouselItem curStep={step} index={100}>
-        <div className="p-4">
+        <div className="">
           <div className="font-semibold text-2xl flex items-center">
             <div className="">旅行计划</div>
             <div
@@ -266,7 +266,7 @@ export default function Home() {
           </div>
           {tripData.map((trip, tripIndex) => {
             return (
-              <Card key={tripIndex} className="mt-10" isBlurred>
+              <Card key={tripIndex} className="mt-10" isFooterBlurred>
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <small className="text-default-500">The Trip to</small>
                   <h4 className="font-bold text-2xl">{trip.destination}</h4>
