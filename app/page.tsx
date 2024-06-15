@@ -232,7 +232,7 @@ export default function Home() {
             {Object.keys(activityDic).map((key, index) => {
               return (
                 <Checkbox key={key} value={activityDic[key as ActivityType]}>
-                  <span className="text-background">
+                  <span className="text-foreground" id="text-color">
                     {activityDic[key as ActivityType]}
                   </span>
                 </Checkbox>
