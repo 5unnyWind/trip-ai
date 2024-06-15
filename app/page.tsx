@@ -264,9 +264,9 @@ export default function Home() {
               +
             </div>
           </div>
-          {tripData.map((trip, index) => {
+          {tripData.map((trip, tripIndex) => {
             return (
-              <Card key={index} className="mt-10" isBlurred>
+              <Card key={tripIndex} className="mt-10" isBlurred>
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <small className="text-default-500">The Trip to</small>
                   <h4 className="font-bold text-2xl">{trip.destination}</h4>
@@ -280,12 +280,31 @@ export default function Home() {
                     到达时间：{timeOfDayDic[trip.arrivalTime as TimeOfDay]}
                   </div>
                   <div className="">
-                    {trip.plan.map((plan, index) => {
+                    {trip.plan.map((plan, planIndex) => {
                       return (
-                        <div key={index} className="mt-2">
+                        <div
+                          key={planIndex}
+                          className={clsx(
+                            "mt-2",
+                            plan.done && "line-through grayscale opacity-50 transition-all duration-500"
+                          )}
+                        >
                           <div className="flex items-center space-x-1">
+                            <Checkbox
+                              isSelected={plan.done}
+                              onValueChange={(value) => {
+                                const _tripData = [...tripData];
+                                _tripData[tripIndex].plan[planIndex].done =
+                                  value;
+                                setTripData(_tripData);
+                                localStorage.setItem(
+                                  "tripData",
+                                  JSON.stringify(_tripData)
+                                );
+                              }}
+                            />
                             <div className="inline-block text-sm w-6 h-6 p-1 leading-4 text-center rounded-full bg-[#FFDB00]">
-                              {+index + 1}
+                              {+planIndex + 1}
                             </div>
                             <Balancer className="text-base font-semibold">
                               {" "}
