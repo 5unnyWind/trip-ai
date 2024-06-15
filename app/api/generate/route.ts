@@ -1,3 +1,4 @@
+import { ActivityType, Peers, TimeOfDay } from "@/app/interface";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
@@ -9,8 +10,22 @@ const client = new OpenAI({
 });
 
 export async function POST(request: NextRequest) {
-  const body: { destination: string; dateRange: [string, string] } =
-    await request.json();
+  const body: {
+    destination: string;
+    dateRange: [string, string];
+    arrivalTime?: TimeOfDay;
+    budget?: string;
+    peers?: Peers;
+    interests?: ActivityType[];
+  } = await request.json();
+
+  const content = `我要在${body.dateRange[0]}到${body.dateRange[1]}去${
+    body.destination
+  }旅行。${body.arrivalTime ? `我会在${body.arrivalTime}到达。` : ""}${
+    body.budget ? `我的预算是${body.budget}元。` : ""
+  }${body.peers ? `我的同伴是${body.peers}。` : ""}${
+    body.interests ? `我对${body.interests?.join("、")}比较感兴趣。` : ""
+  }请为我做一个中文的旅行规划。字段内容都使用中文。字段内容都使用中文。字段内容都使用中文。`;
   const stream = await client.chat.completions.create({
     model: "moonshot-v1-8k",
     stream: true,
@@ -21,7 +36,7 @@ export async function POST(request: NextRequest) {
       },
       {
         role: "user",
-        content: `我要在${body.dateRange[0]}到${body.dateRange[1]}去${body.destination}旅行。请为我做一个中文的旅行规划。字段内容都使用中文。字段内容都使用中文。字段内容都使用中文。`,
+        content: content,
       },
       //@ts-ignore
       { role: "assistant", content: "{", partial: true },

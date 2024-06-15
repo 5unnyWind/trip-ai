@@ -1,12 +1,22 @@
 "use client";
 import Image from "next/image";
 import { Input } from "@nextui-org/input";
-import { Button, Chip, DateRangePicker } from "@nextui-org/react";
+import {
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Chip,
+  DateRangePicker,
+  DateValue,
+  RangeValue,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { TimeOfDay, Trip } from "./interface";
+import { ActivityType, Peers, TimeOfDay, Trip } from "./interface";
 import Balancer from "react-wrap-balancer";
 
 const timeOfDayDic: Record<TimeOfDay, string> = {
@@ -17,11 +27,29 @@ const timeOfDayDic: Record<TimeOfDay, string> = {
   night: "夜晚",
 };
 
+const peersDic: Record<Peers, string> = {
+  Solo: "自己",
+  Couple: "情侣",
+  Family: "家庭",
+  Friends: "朋友",
+};
+
+const activityDic: Record<ActivityType, string> = {
+  Beaches: "海滩",
+  "City sightseeing": "城市观光",
+  "Outdoor adventures": "户外探险",
+  "Festivals/events": "节日/活动",
+  "Food exploration": "美食探索",
+  Nightlife: "夜生活",
+  Shopping: "购物",
+  "Spa wellness": "水疗养生",
+};
+
 export default function Home() {
   const [isLoading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
-  const [dateRange, setDateRange] = useState(["", ""]);
-  const [destination, setDestination] = useState("");
+  const [dateRange, setDateRange] = useState<RangeValue<DateValue>>();
+  const [params, setParams] = useState({} as any);
   const [tripData, setTripData] = useState<Trip[]>([]);
   let HOST = "";
   useEffect(() => {
@@ -34,9 +62,6 @@ export default function Home() {
   }, []);
 
   const handleGenerate = async () => {
-    if (!dateRange[0] || !dateRange[1]) {
-      return;
-    }
     setLoading(true);
     try {
       const res = await fetch(`${HOST}/api/generate`, {
@@ -45,8 +70,10 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          destination,
-          dateRange,
+          ...params,
+          arrivalTime:
+            params.arrivalTime && Array.from(params.arrivalTime)?.[0],
+          peers: params.arrivalTime && Array.from(params.peers)?.[0],
         }),
       });
       if (!res.ok) {
@@ -87,16 +114,16 @@ export default function Home() {
             name="destination"
             className="mt-10"
             label="目的地"
-            value={destination}
+            value={params.destination || ""}
             onChange={(e) => {
-              setDestination(e.target.value);
+              setParams({ ...params, destination: e.target.value });
             }}
           />
           <Button
             radius="full"
             className="w-full mx-auto mt-4"
             onClick={() => {
-              if (!destination) {
+              if (!params.destination) {
                 return;
               }
               setStep(1);
@@ -106,29 +133,110 @@ export default function Home() {
           </Button>
         </>
       </CarouselItem>
-      <CarouselItem curStep={step} index={1}>
+      <CarouselItem curStep={step} index={1} setStep={setStep}>
         <>
-          {/* <Button
-              className=""
-              radius="full"
-              size="sm"
-              onClick={() => {
-                setStep(0);
-              }}
-            >
-              {"<"}
-            </Button> */}
           <div className="font-semibold text-2xl">什么时候？</div>
           <DateRangePicker
+            value={dateRange || null}
             onChange={(value) => {
-              setDateRange([
-                `${value.start.month}月${value.start.day}日`,
-                `${value.end.month}月${value.end.day}日`,
-              ]);
+              setDateRange(value);
+              setParams({
+                ...params,
+                dateRange: [
+                  `${value.start.month}月${value.start.day}日`,
+                  `${value.end.month}月${value.end.day}日`,
+                ],
+              });
             }}
             label="旅行时间"
             className="mt-10"
           />
+          <Button
+            radius="full"
+            className="w-full mx-auto mt-4"
+            isLoading={isLoading}
+            onClick={() => {
+              if (!dateRange) {
+                return;
+              }
+              setStep(2);
+            }}
+          >
+            下一步
+          </Button>
+        </>
+      </CarouselItem>
+      <CarouselItem curStep={step} index={2} setStep={setStep}>
+        <>
+          <div className="font-semibold text-2xl">最后，要补充什么？</div>
+          <div className="text-sm">(这一页不填也行)</div>
+          <div className="text-lg font-semibold mt-4">到达时间</div>
+          <Select
+            selectedKeys={params.arrivalTime || new Set([])}
+            label="选择时间"
+            size="sm"
+            onSelectionChange={(keys) => {
+              setParams({ ...params, arrivalTime: keys });
+            }}
+          >
+            {Object.keys(timeOfDayDic).map((key, index) => {
+              return (
+                <SelectItem key={key} className="text-foreground">
+                  {timeOfDayDic[key as TimeOfDay]}
+                </SelectItem>
+              );
+            })}
+          </Select>
+          <div className="text-lg font-semibold mt-4">我的预算</div>
+          <Input
+            value={params.budget || ""}
+            onValueChange={(value) => {
+              setParams({ ...params, budget: value });
+            }}
+            type="number"
+            placeholder="0.00"
+            labelPlacement="outside"
+            startContent={
+              <div className="pointer-events-none flex items-center">
+                <span className="text-default-400 text-small">¥</span>
+              </div>
+            }
+          />
+          <div className="text-lg font-semibold mt-4">我的同伴</div>
+          <Select
+            selectedKeys={params.peers || new Set([])}
+            label="选择同伴"
+            size="sm"
+            onSelectionChange={(keys) => {
+              setParams({ ...params, peers: keys });
+            }}
+          >
+            {Object.keys(peersDic).map((key, index) => {
+              return (
+                <SelectItem key={key} className="text-foreground">
+                  {peersDic[key as Peers]}
+                </SelectItem>
+              );
+            })}
+          </Select>
+          <div className="text-lg font-semibold mt-4">我感兴趣的</div>
+          <CheckboxGroup
+            value={params.interests || []}
+            orientation="horizontal"
+            onValueChange={(value) => {
+              setParams({ ...params, interests: value });
+            }}
+          >
+            {Object.keys(activityDic).map((key, index) => {
+              return (
+                <Checkbox key={key} value={activityDic[key as ActivityType]}>
+                  <span className="text-background">
+                    {activityDic[key as ActivityType]}
+                  </span>
+                </Checkbox>
+              );
+            })}
+          </CheckboxGroup>
           <Button
             radius="full"
             className="w-full mx-auto mt-4"
@@ -147,8 +255,8 @@ export default function Home() {
               className="ml-4 text-3xl text-center w-8 h-8 leading-7 rounded-full bg-[#26355D]"
               onClick={() => {
                 setStep(0);
-                setDestination("");
-                setDateRange(["", ""]);
+                setDateRange(undefined);
+                setParams({});
               }}
             >
               +
@@ -167,7 +275,7 @@ export default function Home() {
                 <CardBody className="overflow-visible py-2">
                   <Divider className="mb-2" />
                   <div className="text-sm font-semibold ">
-                    到达时间：{timeOfDayDic[trip.arrivalTime]}
+                    到达时间：{timeOfDayDic[trip.arrivalTime as TimeOfDay]}
                   </div>
                   <div className="">
                     {trip.plan.map((plan, index) => {
@@ -208,10 +316,14 @@ const CarouselItem = ({
   curStep,
   index,
   children,
+  setStep,
+  isLoading,
 }: {
   curStep: number;
   index: number;
   children: JSX.Element;
+  setStep?: (step: number) => void;
+  isLoading?: boolean;
 }) => {
   return (
     <div
@@ -222,6 +334,22 @@ const CarouselItem = ({
         curStep > index && "opacity-0 -translate-x-[100vw]"
       )}
     >
+      {index > 0 && index < 100 ? (
+        <div
+          className={clsx(
+            "text-lg font-semibold mb-2 bg-default-300 w-6 h-6 text-center leading-6 rounded-full",
+            isLoading && "opacity-80"
+          )}
+          onClick={() => {
+            if (isLoading) return;
+            setStep?.(+index - 1);
+          }}
+        >
+          {"<"}
+        </div>
+      ) : (
+        <></>
+      )}
       {children}
     </div>
   );
