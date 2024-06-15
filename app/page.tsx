@@ -108,7 +108,7 @@ export default function Home() {
     setLoading(false);
   };
   return (
-    <main className="w-full overflow-x-hidden overflow-y-auto min-h-screen relative">
+    <main className="w-full overflow-x-hidden overflow-y-auto min-h-screen relative max-w-lg mx-auto">
       <CarouselItem curStep={step} index={0}>
         <>
           <div className="font-semibold text-2xl">想去哪儿？</div>
@@ -250,7 +250,7 @@ export default function Home() {
         </>
       </CarouselItem>
       <CarouselItem curStep={step} index={100}>
-        <>
+        <div className="p-4">
           <div className="font-semibold text-2xl flex items-center">
             <div className="">旅行计划</div>
             <div
@@ -339,7 +339,7 @@ export default function Home() {
               </Card>
             );
           })}
-        </>
+        </div>
       </CarouselItem>
     </main>
   );
