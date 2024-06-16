@@ -8,6 +8,7 @@ import {
   Chip,
   DateRangePicker,
   DateValue,
+  RangeCalendar,
   RangeValue,
   Select,
   SelectItem,
@@ -19,6 +20,7 @@ import clsx from "clsx";
 import { ActivityType, Peers, TimeOfDay, Trip } from "./interface";
 import Balancer from "react-wrap-balancer";
 import toast from "react-hot-toast";
+import { I18nProvider } from "@react-aria/i18n";
 
 const timeOfDayDic: Record<TimeOfDay, string> = {
   morning: "早上",
@@ -149,21 +151,23 @@ export default function Home() {
       <CarouselItem curStep={step} index={1} setStep={setStep}>
         <>
           <div className="font-semibold text-2xl">什么时候？</div>
-          <DateRangePicker
-            value={dateRange || null}
-            onChange={(value) => {
-              setDateRange(value);
-              setParams({
-                ...params,
-                dateRange: [
-                  `${value.start.month}月${value.start.day}日`,
-                  `${value.end.month}月${value.end.day}日`,
-                ],
-              });
-            }}
-            label="旅行时间"
-            className="mt-10"
-          />
+          <div className="mt-10 flex justify-center">
+            <I18nProvider locale="zh-CN">
+              <RangeCalendar
+                value={dateRange || null}
+                onChange={(value) => {
+                  setDateRange(value);
+                  setParams({
+                    ...params,
+                    dateRange: [
+                      `${value.start.month}月${value.start.day}日`,
+                      `${value.end.month}月${value.end.day}日`,
+                    ],
+                  });
+                }}
+              />
+            </I18nProvider>
+          </div>
           <Button
             radius="full"
             className="w-full mx-auto mt-4"
@@ -385,7 +389,7 @@ const CarouselItem = ({
   return (
     <div
       className={clsx(
-        "w-full mt-10 absolute top-0 transition-all duration-500",
+        "w-full mt-10 absolute top-0 transition-all duration-500 z-10",
         curStep < index && "opacity-0 translate-x-[100vw]",
         curStep === index && "opacity-100 translate-x-0 sticky",
         curStep > index && "opacity-0 -translate-x-[100vw]"
