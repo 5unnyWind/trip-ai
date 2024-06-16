@@ -56,7 +56,7 @@ export default function Home() {
   const [dateRange, setDateRange] = useState<RangeValue<DateValue>>();
   const [params, setParams] = useState({} as any);
   const [tripData, setTripData] = useState<Trip[]>([]);
-  const receivedRef = useRef<HTMLSpanElement>(null);
+  const receivedRef = useRef<HTMLDivElement>(null);
   let HOST = "";
   useEffect(() => {
     HOST = window.location.origin;
@@ -272,10 +272,10 @@ export default function Home() {
           >
             生成
           </Button>
-          <span
-            className="text-xs opacity-50 overflow-hidden text-ellipsis whitespace-nowrap"
+          <div
+            className="text-xs opacity-50 w-full overflow-hidden text-ellipsis whitespace-nowrap"
             ref={receivedRef}
-          ></span>
+          ></div>
         </>
       </CarouselItem>
       <CarouselItem curStep={step} index={100}>
