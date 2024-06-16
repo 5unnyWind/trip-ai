@@ -1,11 +1,12 @@
 import { Providers } from "./providers";
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { Analytics } from "@vercel/analytics/react";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Trip-AI",
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} p-12`}>
+      <body className={`p-12`}>
         <Providers>{children}</Providers>
         <div className="text-2xl font-semibold opacity-20 fixed bottom-2 flex items-center">
           Trip AI
@@ -37,6 +38,7 @@ export default function RootLayout({
           </a>
         </div>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );

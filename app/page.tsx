@@ -305,9 +305,9 @@ export default function Home() {
                 </CardHeader>
                 <CardBody className="overflow-visible py-2">
                   <Divider className="mb-2" />
-                  <div className="text-sm font-semibold ">
+                  {/* <div className="text-sm font-semibold ">
                     到达时间：{timeOfDayDic[trip.arrivalTime as TimeOfDay]}
-                  </div>
+                  </div> */}
                   <div className="">
                     {trip.plan.map((plan, planIndex) => {
                       return (
