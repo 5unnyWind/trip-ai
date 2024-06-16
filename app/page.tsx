@@ -168,12 +168,18 @@ export default function Home() {
           </Button>
         </>
       </CarouselItem>
-      <CarouselItem curStep={step} index={2} setStep={setStep}>
+      <CarouselItem
+        curStep={step}
+        index={2}
+        setStep={setStep}
+        isLoading={isLoading}
+      >
         <>
           <div className="font-semibold text-2xl">最后，要补充什么？</div>
           <div className="text-sm">(这一页不填也行)</div>
           <div className="text-lg font-semibold mt-4">到达时间</div>
           <Select
+            isDisabled={isLoading}
             selectedKeys={params.arrivalTime || new Set([])}
             label="选择时间"
             size="sm"
@@ -191,6 +197,7 @@ export default function Home() {
           </Select>
           <div className="text-lg font-semibold mt-4">我的预算</div>
           <Input
+            isDisabled={isLoading}
             value={params.budget || ""}
             onValueChange={(value) => {
               setParams({ ...params, budget: value });
@@ -206,6 +213,7 @@ export default function Home() {
           />
           <div className="text-lg font-semibold mt-4">我的同伴</div>
           <Select
+            isDisabled={isLoading}
             selectedKeys={params.peers || new Set([])}
             label="选择同伴"
             size="sm"
@@ -223,6 +231,7 @@ export default function Home() {
           </Select>
           <div className="text-lg font-semibold mt-4">我感兴趣的</div>
           <CheckboxGroup
+            isDisabled={isLoading}
             value={params.interests || []}
             orientation="horizontal"
             onValueChange={(value) => {
