@@ -77,7 +77,7 @@ export default function Home() {
           ...params,
           arrivalTime:
             params.arrivalTime && Array.from(params.arrivalTime)?.[0],
-          peers: params.arrivalTime && Array.from(params.peers)?.[0],
+          peers: params.peers && Array.from(params.peers)?.[0],
         }),
       });
       if (!res.ok) {
@@ -114,7 +114,7 @@ export default function Home() {
       }
     } catch (e) {
       console.log(e);
-      toast.error("生成失败,再试一次吧");
+      toast.error(`生成失败,再试一次吧 ${e}`);
     }
     setLoading(false);
   };

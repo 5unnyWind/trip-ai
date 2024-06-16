@@ -31,10 +31,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} p-12`}>
         <Providers>{children}</Providers>
-        <div className="text-3xl font-semibold opacity-20 fixed bottom-4 flex items-center">
+        <div className="text-2xl font-semibold opacity-20 fixed bottom-4 flex items-center">
           Trip AI
           <a href="https://github.com/5unnyWind/trip-ai">
-            <GitHubLogoIcon className=" w-8 h-8 ml-4" />
+            <GitHubLogoIcon className="w-7 h-7 ml-4" />
           </a>
         </div>
         <Toaster />
