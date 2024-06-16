@@ -398,7 +398,7 @@ const CarouselItem = ({
       {index > 0 && index < 100 ? (
         <div
           className={clsx(
-            "text-lg font-semibold mb-2 bg-default-300 w-6 h-6 text-center leading-6 rounded-full",
+            "text-md font-semibold  bg-default-300/20 px-3 inline text-center rounded-full",
             isLoading && "opacity-80"
           )}
           onClick={() => {
@@ -411,6 +411,7 @@ const CarouselItem = ({
       ) : (
         <></>
       )}
+      <div className="mt-2"></div>
       {children}
     </div>
   );
