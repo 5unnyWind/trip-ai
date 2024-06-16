@@ -99,7 +99,7 @@ export default function Home() {
           );
           break;
         }
-        curAnswer += decoder.decode(value);
+        curAnswer += decoder.decode(value, { stream: true });
       }
     } catch (e) {
       console.log(e);

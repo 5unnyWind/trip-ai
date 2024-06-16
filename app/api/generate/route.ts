@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     messages: [
       {
         role: "system",
-        content: `请做一个中文的旅行规划并输出一个 trip 格式的 json 对象中输出。格式描述为：${typeDescription}`,
+        content: `请做一个中文的旅行规划并输出一个 Trip 格式的 json 对象中输出。格式描述为：${typeDescription}`,
       },
       {
         role: "user",
