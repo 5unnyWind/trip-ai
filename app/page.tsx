@@ -92,6 +92,7 @@ export default function Home() {
         return;
       }
       const decoder = new TextDecoder("utf-8");
+      receivedRef.current?.scrollIntoView({ behavior: "smooth" });
       for (;;) {
         const { done, value } = await reader.read();
         if (receivedRef.current) {
@@ -389,7 +390,7 @@ const CarouselItem = ({
   return (
     <div
       className={clsx(
-        "w-full mt-10 absolute top-0 transition-all duration-500 z-10",
+        "w-full  absolute top-0 transition-all duration-500 z-10",
         curStep < index && "opacity-0 translate-x-[100vw]",
         curStep === index && "opacity-100 translate-x-0 sticky",
         curStep > index && "opacity-0 -translate-x-[100vw]"
