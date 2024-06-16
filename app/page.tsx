@@ -14,10 +14,11 @@ import {
 } from "@nextui-org/react";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ActivityType, Peers, TimeOfDay, Trip } from "./interface";
 import Balancer from "react-wrap-balancer";
+import toast from "react-hot-toast";
 
 const timeOfDayDic: Record<TimeOfDay, string> = {
   morning: "早上",
@@ -53,6 +54,7 @@ export default function Home() {
   const [dateRange, setDateRange] = useState<RangeValue<DateValue>>();
   const [params, setParams] = useState({} as any);
   const [tripData, setTripData] = useState<Trip[]>([]);
+  const receivedRef = useRef<HTMLSpanElement>(null);
   let HOST = "";
   useEffect(() => {
     HOST = window.location.origin;
@@ -90,21 +92,30 @@ export default function Home() {
       const decoder = new TextDecoder("utf-8");
       for (;;) {
         const { done, value } = await reader.read();
+        if (receivedRef.current) {
+          receivedRef.current.innerText = "正在生成中:" + value?.toString();
+        }
         if (done) {
+          if (receivedRef.current) {
+            receivedRef.current.innerText = "";
+          }
           const completeMessage = JSON.parse(curAnswer);
           setTripData([completeMessage, ...tripData]);
           localStorage.setItem(
             "tripData",
             JSON.stringify([completeMessage, ...tripData])
           );
+          toast.success("生成成功");
+          setStep(100);
           break;
         }
-        curAnswer += decoder.decode(value, { stream: true });
+        const curText = decoder.decode(value, { stream: true });
+        curAnswer += curText;
       }
     } catch (e) {
       console.log(e);
+      toast.error("生成失败,再试一次吧");
     }
-    setStep(100);
     setLoading(false);
   };
   return (
@@ -256,6 +267,10 @@ export default function Home() {
           >
             生成
           </Button>
+          <span
+            className="text-xs opacity-50 overflow-hidden text-ellipsis whitespace-nowrap"
+            ref={receivedRef}
+          ></span>
         </>
       </CarouselItem>
       <CarouselItem curStep={step} index={100}>

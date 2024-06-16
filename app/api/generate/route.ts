@@ -25,14 +25,14 @@ export async function POST(request: NextRequest) {
     body.budget ? `我的预算是${body.budget}元。` : ""
   }${body.peers ? `我的同伴是${body.peers}。` : ""}${
     body.interests ? `我对${body.interests?.join("、")}比较感兴趣。` : ""
-  }请为我做一个中文的旅行规划。字段内容都使用中文。字段内容都使用中文。字段内容都使用中文。`;
+  }请为我做一个中文的旅行规划。字段内容都使用中文。不要输出除了json以外的内容，不要输出除了json以外的内容，不要输出除了json以外的内容。`;
   const stream = await client.chat.completions.create({
     model: "moonshot-v1-8k",
     stream: true,
     messages: [
       {
         role: "system",
-        content: `请做一个中文的旅行规划并输出一个 Trip 格式的 json 对象中输出。格式描述为：${typeDescription}`,
+        content: `请做一个中文的旅行规划并输出一个 Trip 格式的 json 对象。格式定义为：${typeDescription}。`,
       },
       {
         role: "user",
