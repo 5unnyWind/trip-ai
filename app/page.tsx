@@ -21,6 +21,7 @@ import { ActivityType, Peers, TimeOfDay, Trip } from "./interface";
 import Balancer from "react-wrap-balancer";
 import toast from "react-hot-toast";
 import { I18nProvider } from "@react-aria/i18n";
+import pRetry, { AbortError } from "p-retry";
 
 const timeOfDayDic: Record<TimeOfDay, string> = {
   morning: "早上",
@@ -68,8 +69,7 @@ export default function Home() {
   }, []);
 
   const handleGenerate = async () => {
-    setLoading(true);
-    try {
+    const run = async () => {
       const res = await fetch(`${HOST}/api/generate`, {
         method: "POST",
         headers: {
@@ -115,9 +115,14 @@ export default function Home() {
         const curText = decoder.decode(value, { stream: true });
         curAnswer += curText;
       }
+    };
+
+    setLoading(true);
+    try {
+      await pRetry(run, { retries: 1 });
     } catch (e) {
       console.log(e);
-      toast.error(`生成失败,再试一次吧 ${e}`);
+      toast.error(`生成失败,稍后再试 ${e}`);
     }
     setLoading(false);
   };
