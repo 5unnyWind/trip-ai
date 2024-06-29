@@ -5,8 +5,8 @@ import OpenAI from "openai";
 export const maxDuration = 60;
 
 const client = new OpenAI({
-  apiKey: process.env.MOONSHOT_API_KEY,
-  baseURL: "https://api.moonshot.cn/v1",
+  apiKey: process.env.UNI_API_KEY,
+  baseURL: "https://api.uniapi.io/v1",
 });
 
 export async function POST(request: NextRequest) {
@@ -25,9 +25,9 @@ export async function POST(request: NextRequest) {
     body.budget ? `我的预算是${body.budget}元。` : ""
   }${body.peers ? `我的同伴是${body.peers}。` : ""}${
     body.interests ? `我对${body.interests?.join("、")}比较感兴趣。` : ""
-  }请为我做一个中文的旅行规划。字段内容都使用中文。不要输出除了json以外的内容，不要输出除了json以外的内容，不要输出除了json以外的内容。`;
+  }请为我做一个中文的旅行规划。字段内容都使用中文。不要输出除了json以外的内容，不要输出除了json以外的内容，不要输出除了json以外的内容。不需要markdown语法标记。`;
   const stream = await client.chat.completions.create({
-    model: "moonshot-v1-8k",
+    model: "gpt-4o-2024-05-13",
     stream: true,
     messages: [
       {
@@ -39,11 +39,12 @@ export async function POST(request: NextRequest) {
         content: content,
       },
       //@ts-ignore
-      { role: "assistant", content: "{", partial: true },
+      // { role: "assistant", content: "{", partial: true },
     ],
     temperature: 0.3,
     max_tokens: 4096,
   });
+
   let completeMessage = "";
   const encoder = new TextEncoder();
   async function* makeIterator() {

@@ -85,7 +85,7 @@ export default function Home() {
       if (!res.ok) {
         throw new Error(res.statusText);
       }
-      let curAnswer = "{";
+      let curAnswer = "";
       // read stream
       const reader = res.body?.getReader();
       if (!reader) {
