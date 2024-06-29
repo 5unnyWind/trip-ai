@@ -22,6 +22,10 @@ import Balancer from "react-wrap-balancer";
 import toast from "react-hot-toast";
 import { I18nProvider } from "@react-aria/i18n";
 import pRetry, { AbortError } from "p-retry";
+import Confetti, {
+  ConfettiButton,
+  ConfettiRef,
+} from "@/components/magicui/confetti";
 
 const timeOfDayDic: Record<TimeOfDay, string> = {
   morning: "早上",
@@ -58,6 +62,7 @@ export default function Home() {
   const [params, setParams] = useState({} as any);
   const [tripData, setTripData] = useState<Trip[]>([]);
   const receivedRef = useRef<HTMLDivElement>(null);
+  const confettiRef = useRef<HTMLButtonElement>(null);
   let HOST = "";
   useEffect(() => {
     HOST = window.location.origin;
@@ -108,6 +113,7 @@ export default function Home() {
             "tripData",
             JSON.stringify([completeMessage, ...tripData])
           );
+          confettiRef.current?.click();
           toast.success("生成成功");
           setStep(100);
           break;
@@ -375,6 +381,7 @@ export default function Home() {
           })}
         </div>
       </CarouselItem>
+      <ConfettiButton options={{ gravity: 0.9 }} ref={confettiRef} />
     </main>
   );
 }
